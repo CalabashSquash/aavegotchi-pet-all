@@ -44,8 +44,8 @@ if gotchis:
     time_till = (next_interact_time - time.time())
     print(f"Time till next interaction: {time_till / (60*60)} hours.")
     if (time_till > 0):
-        print(f"Sleeping for {time_till} seconds")
-        time.sleep(time_till)
+        print(f"Sleeping for {time_till + 30} seconds")
+        time.sleep(time_till + 30)
     nonce = web3.eth.get_transaction_count(ether_address)
     pet = contract.functions.interact(gotchis).buildTransaction({
         "chainId":137,
