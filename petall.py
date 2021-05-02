@@ -1,4 +1,5 @@
 import sys
+import time
 from web3 import Web3
 from web3.auto import w3
 from eth_account import Account
@@ -35,8 +36,18 @@ print("Attempting to pet gotchis with the following IDs:")
 print(f"{gotchis}")
 
 if gotchis:
+    aavegotchi_details = contract.functions.getAavegotchi(gotchis[0]).call()
+    twelve_hours = 12 * 60 * 60
+    next_interact_time = aavegotchi_details[13] + twelve_hours
+    print(f"Next interaction time: {next_interact_time}")
+    print(f"Current time: {time.time()}")
+    time_till = (next_interact_time - time.time())
+    print(f"Time till next interaction: {time_till / (60*60)} hours.")
+    if (time_till > 0):
+        print(f"Sleeping for {time_till} seconds")
+        time.sleep(time_till)
     nonce = web3.eth.get_transaction_count(ether_address)
-    pet = contract.functions.interact([gotchis[0]]).buildTransaction({
+    pet = contract.functions.interact(gotchis).buildTransaction({
         "chainId":137,
         "gasPrice": w3.toWei("1", "gwei"),
         "nonce": nonce
