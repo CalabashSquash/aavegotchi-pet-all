@@ -35,18 +35,12 @@ print("Attempting to pet gotchis with the following IDs:")
 print(f"{gotchis}")
 
 if gotchis:
-    aavegotchi_details = contract.functions.getAavegotchi(gotchis[0]).call()
     nonce = web3.eth.get_transaction_count(ether_address)
-    print(aavegotchi_details[12])
-    print(aavegotchi_details[13])
-    print("kinship")
-    print(contract.functions.kinship(gotchis[0]).call())
-    print("HELLO=============================================================")
     pet = contract.functions.interact([gotchis[0]]).buildTransaction({
         "chainId":137,
         "gasPrice": w3.toWei("1", "gwei"),
         "nonce": nonce
     })
     signed_txn = web3.eth.account.sign_transaction(pet, private_key=private_key)
-    pet_result = web3.eth.send_raw_transaction(signed_txn.rawTransaction)
-    print(pet_result)
+    print("interact() called. Transaction ID:")
+    print(f"https://explorer-mainnet.maticvigil.com/tx/{web3.eth.send_raw_transaction(signed_txn.rawTransaction).hex()}")
