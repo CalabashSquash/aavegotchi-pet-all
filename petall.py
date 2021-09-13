@@ -12,16 +12,16 @@ aavegotchi_abi = ""
 aavegotchi_diamond = ""
 
 with open("matic_rpc.secret", "r") as reader:
-    rpc = reader.read()
+    rpc = reader.read().strip()
 
 with open("abi.json", "r") as reader:
-    aavegotchi_abi = reader.read()
+    aavegotchi_abi = reader.read().strip()
 
 with open("aavegotchiDiamond.txt", "r") as reader:
-    aavegotchi_diamond = reader.read()
+    aavegotchi_diamond = reader.read().strip()
 
 with open("private_key.secret", "r") as reader:
-    private_key = reader.read()
+    private_key = reader.read().strip()
 
 web3 = Web3(Web3.HTTPProvider(rpc))
 from web3.middleware import geth_poa_middleware
