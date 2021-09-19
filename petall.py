@@ -9,28 +9,18 @@ from decouple import config
 
 
 # get environment variables
-os.environ['API_USER'] = 'username'
-
 private_key = config('PRIVATE_KEY')
 rpc = config('MATIC_RPC')
 
 twelve_hours = 12 * 60 * 60
-# rpc = ""
-# private_key = ""
 aavegotchi_abi = ""
 aavegotchi_diamond = ""
-
-# with open("matic_rpc.secret", "r") as reader:
-#     rpc = reader.read().strip()
 
 with open("abi.json", "r") as reader:
     aavegotchi_abi = reader.read().strip()
 
 with open("aavegotchiDiamond.txt", "r") as reader:
     aavegotchi_diamond = reader.read().strip()
-
-# with open("private_key.secret", "r") as reader:
-#     private_key = reader.read().strip()
 
 web3 = Web3(Web3.HTTPProvider(rpc))
 from web3.middleware import geth_poa_middleware
