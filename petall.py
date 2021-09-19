@@ -1,18 +1,27 @@
 #!/bin/python3
 import sys
 import time
+import os
 from web3 import Web3
 from web3.auto import w3
 from eth_account import Account
+from decouple import config
+
+
+# get environment variables
+os.environ['API_USER'] = 'username'
+
+private_key = config('PRIVATE_KEY')
+rpc = config('MATIC_RPC')
 
 twelve_hours = 12 * 60 * 60
-rpc = ""
-private_key = ""
+# rpc = ""
+# private_key = ""
 aavegotchi_abi = ""
 aavegotchi_diamond = ""
 
-with open("matic_rpc.secret", "r") as reader:
-    rpc = reader.read().strip()
+# with open("matic_rpc.secret", "r") as reader:
+#     rpc = reader.read().strip()
 
 with open("abi.json", "r") as reader:
     aavegotchi_abi = reader.read().strip()
@@ -20,8 +29,8 @@ with open("abi.json", "r") as reader:
 with open("aavegotchiDiamond.txt", "r") as reader:
     aavegotchi_diamond = reader.read().strip()
 
-with open("private_key.secret", "r") as reader:
-    private_key = reader.read().strip()
+# with open("private_key.secret", "r") as reader:
+#     private_key = reader.read().strip()
 
 web3 = Web3(Web3.HTTPProvider(rpc))
 from web3.middleware import geth_poa_middleware
@@ -39,19 +48,18 @@ gotchis = contract.functions.tokenIdsOfOwner(ether_address).call()
 portal_numeric_traits = [0, 0, 0, 0, 0, 0]
 # We want to delete any portals from the list because the transaction will
 # revert when trying to interact with them
-gotchi_copy = gotchis.copy()
-for i in range(len(gotchis)):
-    numeric_traits = contract.functions.getNumericTraits(gotchis[i]).call()
-    if len(set(numeric_traits).intersection(portal_numeric_traits)) != 0:
-        del gotchi_copy[i]
-gotchis = gotchi_copy
+def filterPortals(gotchi): 
+    numeric_traits = contract.functions.getNumericTraits(gotchi).call()
+    return not len(set(numeric_traits).intersection(portal_numeric_traits)) != 0
+
+summoned_gotchis = list(filter(filterPortals, gotchis))
 
 print("Attempting to pet gotchis with the following IDs:")
-print(f"{gotchis}")
+print(f"{summoned_gotchis}")
 
 def pet():
     nonce = web3.eth.get_transaction_count(ether_address)
-    pet_tx = contract.functions.interact(gotchis).buildTransaction({
+    pet_tx = contract.functions.interact(summoned_gotchis).buildTransaction({
         "chainId":137,
         "gasPrice": w3.toWei("1", "gwei"),
         "nonce": nonce
@@ -64,7 +72,7 @@ def pet():
     print(f"https://polygonscan.com/tx/{tx_hash}")
 
 def next_interact_time(contract):
-    aavegotchi_details = contract.functions.getAavegotchi(gotchis[0]).call()
+    aavegotchi_details = contract.functions.getAavegotchi(summoned_gotchis[0]).call()
     next_interact_time = aavegotchi_details[13] + twelve_hours
     print(f"Next interaction time: {next_interact_time}")
     print(f"Current time: {time.time()}")
@@ -72,7 +80,7 @@ def next_interact_time(contract):
     print(f"Time till next interaction: {time_till / (60*60)} hours.")
     return time_till
 
-if gotchis:
+if summoned_gotchis:
     while True:
         time_till = next_interact_time(contract)
         if time_till > 0:
