@@ -40,7 +40,7 @@ portal_numeric_traits = [0, 0, 0, 0, 0, 0]
 # revert when trying to interact with them
 def filterPortals(gotchi): 
     numeric_traits = contract.functions.getNumericTraits(gotchi).call()
-    return not len(set(numeric_traits).intersection(portal_numeric_traits)) != 0
+    return len(set(numeric_traits).intersection(portal_numeric_traits)) == 0
 
 summoned_gotchis = list(filter(filterPortals, gotchis))
 
