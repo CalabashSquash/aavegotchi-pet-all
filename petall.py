@@ -7,7 +7,6 @@ from web3.auto import w3
 from eth_account import Account
 from decouple import config
 
-
 # get environment variables
 private_key = config('PRIVATE_KEY')
 rpc = config('MATIC_RPC')
@@ -51,7 +50,6 @@ def pet():
     nonce = web3.eth.get_transaction_count(ether_address)
     pet_tx = contract.functions.interact(summoned_gotchis).buildTransaction({
         "chainId":137,
-        "gasPrice": w3.toWei("1", "gwei"),
         "nonce": nonce
     })
 
@@ -76,7 +74,10 @@ if summoned_gotchis:
         if time_till > 0:
             print(f"Sleeping for {time_till} seconds")
             time.sleep(time_till + 30)
-        pet()
+        try:
+            pet()
+        except Error as e:
+            print(F"Petting failed with error {e}")
         time.sleep(120)
         if next_interact_time(contract) > 11*60*60:
             break

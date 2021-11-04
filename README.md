@@ -6,6 +6,7 @@ A simple repository for petting all of a user's Aavegotchis
 ```
 pip3 install web3
 pip3 install eth_account
+pip3 install python-decouple
 ```
 
 Create a .env file with the following variables
